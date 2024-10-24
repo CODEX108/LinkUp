@@ -36,16 +36,3 @@ Follow these steps to set up the project:
    ```
 
    Your app should now be running on [http://localhost:3000](http://localhost:3000).
-
-## Course Structure
-
-This course is divided into multiple modules, each covering different aspects of building the Slack clone. The modules include:
-
-- Setting up Next.js and TypeScript
-- Configuring Supabase (RPC, Storage, SQL, Role Level Security)
-- Styling with Tailwind CSS and Shadcn UI
-- Implementing Authentication (Google Auth, GitHub Auth, Email Auth with Magic Link)
-- Managing state with Zustand and React Hook Form
-- Real-time communication with Socket.IO
-- Handling file uploads with Uploadthing and Supbase Storage
-- Advanced Next.js features and middleware
