@@ -1,4 +1,5 @@
 "use client"
+import Head from 'next/head';
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { BsSlack } from "react-icons/bs"
 import { FcGoogle } from "react-icons/fc"
@@ -53,7 +54,7 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen p-5 grid text-center place-content-center bg-black">
+    <div className="min-h-screen p-5 grid text-center place-content-center bg-white">
       <div className="max-w-[450px]">
         <div className="flex justify-center items-center gap-3 mb-4">
           <BsSlack size={30} />

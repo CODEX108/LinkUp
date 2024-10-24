@@ -1,6 +1,7 @@
 import { getUserData } from '@/actions/get-user-data';
 import { supabaseServerClient } from '@/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
+// Import for rethrow removed
 
 function getPagination(page: number, size: number) {
   const limit = size ? +size : 10;
@@ -11,24 +12,24 @@ function getPagination(page: number, size: number) {
 }
 
 export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const channelId = searchParams.get('channelId');
+  const page = Number(searchParams.get('page'));
+  const size = Number(searchParams.get('size'));
+
+  if (!channelId) {
+    return new Response('Bad Request', { status: 400 });
+  }
+
+  const { from, to } = getPagination(page, size);
+
   try {
     const supabase = await supabaseServerClient();
     const userData = await getUserData();
-    const { searchParams } = new URL(req.url);
-    const channelId = searchParams.get('channelId');
 
     if (!userData) {
       return new Response('Unauthorized', { status: 401 });
     }
-
-    if (!channelId) {
-      return new Response('Bad Request', { status: 400 });
-    }
-
-    const page = Number(searchParams.get('page'));
-    const size = Number(searchParams.get('size'));
-
-    const { from, to } = getPagination(page, size);
 
     const { data, error } = await supabase
       .from('messages')
@@ -44,7 +45,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ data });
   } catch (error) {
-    console.log('SERVER ERROR: ', error);
+    throw error; // Re-throw any errors
+    console.error('SERVER ERROR: ', error);
     return new Response('Internal Server Error', { status: 500 });
   }
 }
