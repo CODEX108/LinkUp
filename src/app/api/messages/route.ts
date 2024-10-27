@@ -2,6 +2,9 @@ import { getUserData } from '@/actions/get-user-data';
 import { supabaseServerClient } from '@/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
 
+// Add this line to explicitly mark the route as dynamic
+export const dynamic = 'force-dynamic';
+
 function getPagination(page: number, size: number) {
   const limit = size ? +size : 10;
   const from = page ? page * limit : 0;
@@ -12,8 +15,12 @@ function getPagination(page: number, size: number) {
 
 export async function GET(req: Request) {
   try {
-    const supabase = await supabaseServerClient();
-    const userData = await getUserData();
+    // Create supabase client and get user data early in the request lifecycle
+    const [supabase, userData] = await Promise.all([
+      supabaseServerClient(),
+      getUserData()
+    ]);
+
     const { searchParams } = new URL(req.url);
     const channelId = searchParams.get('channelId');
 
@@ -25,8 +32,8 @@ export async function GET(req: Request) {
       return new Response('Bad Request', { status: 400 });
     }
 
-    const page = Number(searchParams.get('page'));
-    const size = Number(searchParams.get('size'));
+    const page = Number(searchParams.get('page')) || 0;
+    const size = Number(searchParams.get('size')) || 10;
 
     const { from, to } = getPagination(page, size);
 
@@ -38,13 +45,13 @@ export async function GET(req: Request) {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.log('GET MESSAGES ERROR: ', error);
+      console.error('GET MESSAGES ERROR: ', error);
       return new Response('Bad Request', { status: 400 });
     }
 
     return NextResponse.json({ data });
   } catch (error) {
-    console.log('SERVER ERROR: ', error);
+    console.error('SERVER ERROR: ', error);
     return new Response('Internal Server Error', { status: 500 });
   }
 }
